@@ -10,15 +10,18 @@ For production use we will need to have a volume of at least 1TB.
 To use this guide you need to have installed Terraform and the OpenStack CLI. Check the urls and the
 bottom of this document for info on how to do that.
 
-### Problems using Terraform
+### Some issues with using Terraform for setting up instances in NREC
 
 - difficult syntax, hard to get right
 - a lot of destroying and creating to test small changes
-- if you put everything into one script (creating zone, volume, security group) then you have to delete manually if something goes wrong and you need
+- if you put everything into one script (creating zone, volume, security group) then you have
+  sometimes have to delete things manually using OpenStack CLI if something goes wrong and you need
   to rerun the script.
 
 I've opted for using Terraform together with OpenStack CLI because some things are easier to just do
 outside of a script.
+
+### Procedure
 
 First you need to clone this repo
 
@@ -26,7 +29,7 @@ First you need to clone this repo
 git clone https://github.com/NorESSI/test-environment-nrec.git
 ```
 
-Fill in username and password in keystone_rc.sh
+Fill in username and password in keystone_rc.sh and then source it
 
 ```console
 source keystone_rc.sh
@@ -49,8 +52,6 @@ ssh-keygen -b 2048 -t rsa -f ~/.ssh/terraform-keys -q -N ""
 Create ansible host in uib-nessi-prod
 ```console
 cd eessi-ansible
-```
-```console
 terraform 0.13upgrade && terraform init
 terraform plan
 terraform apply
