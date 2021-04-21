@@ -1,11 +1,13 @@
 ## Setting up a Statum 1 server inside NREC from scratch
-This quide shows how I set up a Stratum 1 server in NREC using Terraform and the OpenStack CLI. For
-this two VMs are needed, one for setting up ansible with EESSI settings, and one for the actual
-Stratum 1 server. Since the ansible VM is just needed to install the Stratum 1 VM, we can use the
-"m1.small" flavor. For the Stratum 1 VM we use the "m1.large" flavor together with an additional
-volume of 200GB. This disksize should be sufficient for a while during the pilot phase. Currently
-(2021-04-21) the whole software stack takes up around 60GB but this is expected to grow quite fast.
-For production use we will need to have a volume of at least 1TB.
+This shows how to set up a Stratum 1 server on NREC using Terraform, the OpenStack CLI and Ansible.
+In addition to the VM running the Stratum 1, we need one more on which Ansible playbooks provided
+via EESSI are run. Since the Ansible VM only runs a few scripts to install the Stratum 1 VM, we use the
+smallest available flavor (e.g., "m1.small"). For the Stratum 1 VM, we use the "m1.large" flavor and attach
+a volume of 200 GB. This disksize should be sufficient for to store the software stacks provided by the
+EESSI pilot repository. Currently
+(2021-04-21) the all software stacks (all hardware targets, all versions) consume around 60 GB but this is expected to grow in the coming months.
+
+For full production use we will need to have a volume of at least 1 TB.
 
 To use this guide you need to have installed Terraform and the OpenStack CLI. Check the urls and the
 bottom of this document for info on how to do that.
@@ -14,7 +16,7 @@ bottom of this document for info on how to do that.
 
 - difficult syntax, hard to get right
 - a lot of destroying and creating to test small changes
-- if you put everything into one script (creating zone, volume, security group) then you have
+- if you put everything into one script (creating zone, volume, security group) then you 
   sometimes have to delete things manually using OpenStack CLI if something goes wrong and you need
   to rerun the script.
 
@@ -37,7 +39,7 @@ source keystone_rc.sh
 
 Put ssh public keys of project members into the file called authorized_keys. One key for each line.
 
-Create zone (easier to do with openstack command..)
+Create a zone (easier to do with openstack command..)
 
 ```console
 openstack zone create --email parosen@uio.no nessi-prod.uiocloud.no.
