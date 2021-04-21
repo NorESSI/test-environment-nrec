@@ -1,11 +1,11 @@
 ## Setting up a Statum 1 server inside NREC from scratch
-This shows how to set up a Stratum 1 server on NREC using Terraform, the OpenStack CLI and Ansible.
+This README explains how to set up a Stratum 1 server on NREC using Terraform, the OpenStack CLI and Ansible.
 In addition to the VM running the Stratum 1, we need one more on which Ansible playbooks provided
 via EESSI are run. Since the Ansible VM only runs a few scripts to install the Stratum 1 VM, we use the
 smallest available flavor (e.g., "m1.small"). For the Stratum 1 VM, we use the "m1.large" flavor and attach
-a volume of 200 GB. This disksize should be sufficient for to store the software stacks provided by the
+a volume of 200 GB. This disksize should be sufficient to store the software stacks provided by the
 EESSI pilot repository. Currently
-(2021-04-21) the all software stacks (all hardware targets, all versions) consume around 60 GB but this is expected to grow in the coming months.
+(2021-04-21) all software stacks (all hardware targets, all versions) consume around 60 GB but this is expected to grow in the coming months.
 
 For full production use we will need to have a volume of at least 1 TB.
 
@@ -45,7 +45,7 @@ Create a zone (easier to do with openstack command..)
 openstack zone create --email parosen@uio.no nessi-prod.uiocloud.no.
 ```
 
-Create silly keypair (to be used only for adding the authorized_keys in /home/centos/.ssh/authorized_keys on the host
+Create silly keypair (to be used only for adding the authorized_keys in /home/centos/.ssh/authorized_keys on the host)
 
 ```console
 ssh-keygen -b 2048 -t rsa -f ~/.ssh/terraform-keys -q -N ""
@@ -65,7 +65,7 @@ Delete the terraform-key from the project
 openstack keypair delete terraform-key
 ```
 
-Created stratum 1 host in uib-nessi-prod
+Create Stratum 1 host in uib-nessi-prod
 
 ```console
 cd ../cvmfs-s1-bgo
