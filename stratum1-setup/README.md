@@ -4,13 +4,14 @@ In addition to the VM running the Stratum 1, we need one more on which Ansible p
 via EESSI are run. Since the Ansible VM only runs a few scripts to install the Stratum 1 VM, we use the
 smallest available flavor (e.g., "m1.small"). For the Stratum 1 VM, we use the "m1.large" flavor and attach
 a volume of 200 GB. This disksize should be sufficient to store the software stacks provided by the
-EESSI pilot repository. Currently
-(2021-04-21) all software stacks (all hardware targets, all versions) consume around 60 GB but this is expected to grow in the coming months.
+EESSI pilot repository. Currently (2021-04-21) all software stacks (all hardware targets, all
+versions) consume around 60 GB but this is expected to grow in the coming months.
 
 For full production use we will need to have a volume of at least 1 TB.
 
 To use this guide you need to have installed Terraform and the OpenStack CLI. Check the urls and the
 bottom of this document for info on how to do that.
+
 
 ### Some issues with using Terraform for setting up instances in NREC
 
@@ -24,6 +25,11 @@ I've opted for using Terraform together with OpenStack CLI because some things a
 outside of a script.
 
 ### Procedure
+
+When following this procedure, these two instances will be reachable by ping and ssh from all UiO
+and UiB machines. Getting access is done by adding ssh public keys inside
+/home/centos/.ssh/authorized_keys on both VMs. A records (ipv4) and AAAA records (ipv6) are created
+so that the VMs are easily identified by their hostname under the subzone nessi-prod.uiocloud.no
 
 First you need to clone this repo
 
