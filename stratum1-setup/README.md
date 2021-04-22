@@ -2,7 +2,7 @@
 This README explains how to set up a Stratum 1 server on NREC using Terraform, the OpenStack CLI and Ansible.
 In addition to the VM running the Stratum 1, we need one more on which Ansible playbooks provided
 via EESSI are run. Since the Ansible VM only runs a few scripts to install the Stratum 1 VM, we use the
-smallest available flavor (e.g., "m1.small"). For the Stratum 1 VM, we use the "m1.large" flavor and attach
+smallest available flavor (e.g., "m1.small"). For the Stratum 1 VM, we use the "m1.xlarge" flavor and attach
 a volume of 200 GB. This disksize should be sufficient to store the software stacks provided by the
 EESSI pilot repository. Currently (2021-04-21) all software stacks (all hardware targets, all
 versions) consume around 60 GB but this is expected to grow in the coming months.
@@ -208,11 +208,11 @@ Python 3.8.2 (default, Apr  9 2021, 18:30:18)
 [GCC 9.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>>
+```
 
 When testing is done you can ask Jaco can Dijk on the EESSI Slack to add a new DNS forwarding of
 cvmfs-s1-bgo.eessi-hpc.org to cvmfs-s1-bgo.nessi-prod.uiocloud.no
 
-```
 
 Ref.
 
