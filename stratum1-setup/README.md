@@ -31,13 +31,13 @@ and UiB machines. Getting access is done by adding ssh public keys inside
 /home/centos/.ssh/authorized_keys on both VMs. A records (ipv4) and AAAA records (ipv6) are created
 so that the VMs are easily identified by their hostname under the subzone nessi-prod.uiocloud.no
 
-First you need to clone this repo
+First you need to clone this repo:
 
 ```console
 git clone https://github.com/NorESSI/test-environment-nrec.git
 ```
 
-Fill in username and password in keystone_rc.sh and then source it
+Fill in username and password in keystone_rc.sh and then source it:
 
 ```console
 source keystone_rc.sh
@@ -45,19 +45,20 @@ source keystone_rc.sh
 
 Put ssh public keys of project members into the file called authorized_keys. One key for each line.
 
-Create a zone (easier to do with openstack command..)
+Create a zone (easier to do with openstack command..):
 
 ```console
 openstack zone create --email parosen@uio.no nessi-prod.uiocloud.no.
 ```
 
-Create silly keypair (to be used only for adding the authorized_keys in /home/centos/.ssh/authorized_keys on the host)
+Create silly keypair (to be used only for adding the authorized_keys in /home/centos/.ssh/authorized_keys on the host):
 
 ```console
 ssh-keygen -b 2048 -t rsa -f ~/.ssh/terraform-keys -q -N ""
 ```
 
-Create ansible host in uib-nessi-prod
+Create ansible host in uib-nessi-prod:
+
 ```console
 cd eessi-ansible
 terraform 0.13upgrade && terraform init
@@ -65,13 +66,13 @@ terraform plan
 terraform apply
 ```
 
-Delete the terraform-key from the project
+Delete the terraform-key from the project:
 
 ```console
 openstack keypair delete terraform-key
 ```
 
-Create Stratum 1 host in uib-nessi-prod
+Create Stratum 1 host in uib-nessi-prod:
 
 ```console
 cd ../cvmfs-s1-bgo
@@ -80,7 +81,7 @@ terraform plan
 terraform apply
 ```
 
-Delete terraform-key again
+Delete terraform-key again:
 
 ```console
 openstack keypair delete terraform-key
@@ -91,14 +92,127 @@ created. They can be logged in using the corresponding private ssh keys.
 
 ## cvmfs-s1-bgo-prod VM
 
-TODO
+Mount volume:
+
+```console
+sudo mkfs.ext4 /dev/sdb
+sudo mount /dev/sdb /srv
+```
 
 ## eessi-ansible VM
 
-TODO
+Clone filesystem-layer repo from the EESSI github page:
 
+```console
+git clone https://github.com/EESSI/filesystem-layer.git && cd filesystem-layer
+```
 
+Change name of example files:
 
+```console
+mv inventory/local_site_specific_vars.yml.example inventory/local_site_specific_vars.yml
+mv inventory/hosts.example inventory/hosts
+```
+
+Add this line with the correct key to inventory/local_site_specific_vars.yml: (key was created by Thomas Röblitz)
+
+```
+cvmfs_geo_license_key: "put your key here"
+```
+
+Add IP address of the Stratum 1 VM (cvmfs-s1-bgo-prod in this case) in the inventory/hosts file:
+
+```
+[cvmfsstratum1servers]
+"158.39.77.xx"
+```
+
+Install Ansible
+```console
+sudo yum install -y ansible
+```
+
+Then install Ansible roles for EESSI:
+
+```console
+ansible-galaxy role install -r requirements.yml -p ./roles --force
+```
+
+Create ssh keys for accessing the Stratum 1 server:
+
+```console
+ssh-keygen -b 2048 -t rsa -f ~/.ssh/ansible-host-keys -q -N ""
+```
+
+Make sure the ansible-host-keys.pub is in the $HOME/.ssh/authorized_keys file on your Stratum 1 server.
+
+```console
+ansible-playbook -b --private-key ~/.ssh/ansible-host-keys -e @inventory/local_site_specific_vars.yml stratum1.yml
+```
+
+About 70 min later you will have you Stratum 1 server up and running. 
+
+## Test locally on other VM
+
+Download and install the CVMFS client rpm:
+
+```console
+yum install https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest.noarch.rpm
+yum install -y cvmfs
+```
+
+Download and install the EESSI-specific configuration package: 
+
+```console
+wget https://github.com/EESSI/filesystem-layer/releases/download/v0.3.1/cvmfs-config-eessi-0.3.1-1.noarch.rpm
+sudo rpm -ivh cvmfs-config-eessi-0.3.1-1.noarch.rpm
+```
+
+Add these two lines to /etc/cvmfs/default.local
+
+```
+CVMFS_CLIENT_PROFILE=single
+CVMFS_QUOTA_LIMIT=40000
+```
+
+Add the url to our new Stratum 1 to the CMVFS_SERVER_URL variable in /etc/cvmfs/config.d/pilot.eessi-hpc.org.local:
+
+```
+CVMFS_SERVER_URL="http://cvmfs-s1-rug.eessi-hpc.org/cvmfs/@fqrn@;http://cvmfs-s1-bgo.nessi-prod.uiocloud.no/cvmfs/@fqrn@"
+```
+
+Reload the config and run the cvmfs_talk command:
+
+```console
+sudo cvmfs_config reload pilot.eessi-hpc.org
+sudo cvmfs_talk -i pilot.eessi-hpc.org host info
+```
+
+It should show something like this with your new server at the top:
+
+```bash
+[0] http://cvmfs-s1-bgo.nessi-prod.uiocloud.no/cvmfs/pilot.eessi-hpc.org (geographically ordered)
+[1] http://cvmfs-s1-rug.eessi-hpc.org/cvmfs/pilot.eessi-hpc.org (geographically ordered)
+Active host 0: http://cvmfs-s1-bgo.eessi-hpc.org/cvmfs/pilot.eessi-hpc.org
+```
+
+Since our new Stratum 1 server is closest to us (hopefully!) we can now test it by sourcing the init
+file and loading a module:
+
+```console
+source /cvmfs/pilot.eessi-hpc.org/latest/init/bash
+[EESSI pilot 2021.03] $ module avail
+[EESSI pilot 2021.03] $ module load Python/3.8.2-GCCcore-9.3.0
+[EESSI pilot 2021.03] $ python
+Python 3.8.2 (default, Apr  9 2021, 18:30:18)
+[GCC 9.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+When testing is done you can ask Jaco can Dijk on the EESSI Slack to add a new DNS forwarding of
+cvmfs-s1-bgo.eessi-hpc.org to cvmfs-s1-bgo.nessi-prod.uiocloud.no
+
+```
 
 Ref.
 
