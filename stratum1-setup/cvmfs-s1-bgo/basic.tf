@@ -4,7 +4,7 @@ resource "openstack_networking_secgroup_v2" "instance_access" {
     description = "Allows incoming http traffic on port 80 and 8000"
 }
 
-# Allow http port 80from IPv4 net
+# Allow http port 80 from IPv4 net
 resource "openstack_networking_secgroup_rule_v2" "rule_http80_access_ipv4" {
     direction = "ingress"
     ethertype = "IPv4"
@@ -26,7 +26,7 @@ resource "openstack_networking_secgroup_rule_v2" "rule_http8000_access_ipv4" {
     security_group_id = openstack_networking_secgroup_v2.instance_access.id
 }
 
-# Allow http port 80from IPv6 net
+# Allow http port 80 from IPv6 net
 resource "openstack_networking_secgroup_rule_v2" "rule_http80_access_ipv6" {
     direction = "ingress"
     ethertype = "IPv6"

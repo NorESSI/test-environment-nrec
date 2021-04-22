@@ -138,7 +138,6 @@ resource "openstack_dns_recordset_v2" "a_records" {
   zone_id     = data.openstack_dns_zone_v2.nessi_zone.id
   name        = "${openstack_compute_instance_v2.testnode.name}.${var.nessi_zone_name}."
   type        = "A"
-  #records     = ["${openstack_compute_instance_v2.testnode.access_ip_v4}"]
   records     = [openstack_compute_instance_v2.testnode.access_ip_v4]
 }
 
