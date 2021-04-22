@@ -53,9 +53,9 @@ resource "openstack_compute_keypair_v2" "tf-keypair" {
 }
 
 resource "openstack_compute_instance_v2" "instance" {
-    name = "cvmfs-s1-bgo-prod"
+    name = "cvmfs-s1-bgo"
     image_name = "GOLD CentOS 7"
-    flavor_name = "m1.large"
+    flavor_name = "m1.xlarge"
     key_pair = openstack_compute_keypair_v2.tf-keypair.name
     security_groups = ["default","ssh-icmp-uio-uib", "s1-http" ]
 
@@ -71,7 +71,7 @@ resource "openstack_compute_instance_v2" "instance" {
 resource "null_resource" "authkeys" {
   depends_on = [openstack_compute_instance_v2.instance]
   provisioner "file" {
-    source      = "../authorized_keys"
+    source      = "../authorized_keys.ori"
     destination = "/home/centos/.ssh/authorized_keys"
     }
   connection {

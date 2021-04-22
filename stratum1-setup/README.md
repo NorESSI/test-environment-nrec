@@ -87,10 +87,10 @@ Delete terraform-key again:
 openstack keypair delete terraform-key
 ```
 
-The VMs eeesi-ansible.nessi-prod.uiocloud.no and cvmfs-s1-bgo-prod.eessi-prod.uiocloud.no are now
+The VMs eessi-ansible.nessi-prod.uiocloud.no and cvmfs-s1-bgo.eessi-prod.uiocloud.no are now
 created. They can be logged in using the corresponding private ssh keys.
 
-## cvmfs-s1-bgo-prod VM
+## Instructions for the cvmfs-s1-bgo VM
 
 Mount volume:
 
@@ -99,7 +99,7 @@ sudo mkfs.ext4 /dev/sdb
 sudo mount /dev/sdb /srv
 ```
 
-## eessi-ansible VM
+## Instructions for the eessi-ansible VM
 
 Clone filesystem-layer repo from the EESSI github page:
 
@@ -120,7 +120,7 @@ Add this line with the correct key to inventory/local_site_specific_vars.yml: (k
 cvmfs_geo_license_key: "put your key here"
 ```
 
-Add IP address of the Stratum 1 VM (cvmfs-s1-bgo-prod in this case) in the inventory/hosts file:
+Add IP address of the Stratum 1 VM (cvmfs-s1-bgo in this case) in the inventory/hosts file:
 
 ```
 [cvmfsstratum1servers]
