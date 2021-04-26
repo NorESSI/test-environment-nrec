@@ -28,7 +28,7 @@ outside of a script.
 
 When following this procedure, these two instances will be reachable by ping and ssh from all UiO
 and UiB machines. Getting access is done by adding ssh public keys inside
-/home/centos/.ssh/authorized_keys on both VMs. A records (ipv4) and AAAA records (ipv6) are created
+`/home/centos/.ssh/authorized_keys` on both VMs. A records (ipv4) and AAAA records (ipv6) are created
 so that the VMs are easily identified by their hostname under the subzone nessi-prod.uiocloud.no
 
 First you need to clone this repo:
@@ -37,13 +37,13 @@ First you need to clone this repo:
 git clone https://github.com/NorESSI/test-environment-nrec.git
 ```
 
-Fill in username and password in keystone_rc.sh and then source it:
+Fill in username and password in `keystone_rc.sh` and then source it:
 
 ```console
 source keystone_rc.sh
 ```
 
-Put ssh public keys of project members into the file called authorized_keys. One key for each line.
+Put ssh public keys of project members into the file called `authorized_keys`. One key for each line.
 
 Create a zone (easier to do with openstack command..):
 
@@ -51,7 +51,7 @@ Create a zone (easier to do with openstack command..):
 openstack zone create --email parosen@uio.no nessi-prod.uiocloud.no.
 ```
 
-Create silly keypair (to be used only for adding the authorized_keys in /home/centos/.ssh/authorized_keys on the host):
+Create silly keypair (to be used only for adding the `authorized_keys` in `/home/centos/.ssh/authorized_keys` on the host):
 
 ```console
 ssh-keygen -b 2048 -t rsa -f ~/.ssh/terraform-keys -q -N ""
@@ -87,7 +87,7 @@ Delete terraform-key again:
 openstack keypair delete terraform-key
 ```
 
-The VMs eessi-ansible.nessi-prod.uiocloud.no and cvmfs-s1-bgo.eessi-prod.uiocloud.no are now
+The VMs `eessi-ansible.nessi-prod.uiocloud.no` and `cvmfs-s1-bgo.eessi-prod.uiocloud.no` are now
 created. They can be logged in using the corresponding private ssh keys.
 
 ## Instructions for the cvmfs-s1-bgo VM
@@ -114,7 +114,7 @@ mv inventory/local_site_specific_vars.yml.example inventory/local_site_specific_
 mv inventory/hosts.example inventory/hosts
 ```
 
-Add this line with the correct key to inventory/local_site_specific_vars.yml: (key was created by Thomas Röblitz)
+Add this line with the correct key to `inventory/local_site_specific_vars.yml`: (key was created by Thomas Röblitz)
 
 ```
 cvmfs_geo_license_key: "put your key here"
@@ -144,7 +144,7 @@ Create ssh keys for accessing the Stratum 1 server:
 ssh-keygen -b 2048 -t rsa -f ~/.ssh/ansible-host-keys -q -N ""
 ```
 
-Make sure the ansible-host-keys.pub is in the $HOME/.ssh/authorized_keys file on your Stratum 1 server.
+Make sure the `ansible-host-keys.pub` is in the `$HOME/.ssh/authorized_keys` file on your Stratum 1 server.
 
 ```console
 ansible-playbook -b --private-key ~/.ssh/ansible-host-keys -e @inventory/local_site_specific_vars.yml stratum1.yml
@@ -168,14 +168,14 @@ wget https://github.com/EESSI/filesystem-layer/releases/download/v0.3.1/cvmfs-co
 sudo rpm -ivh cvmfs-config-eessi-0.3.1-1.noarch.rpm
 ```
 
-Add these two lines to /etc/cvmfs/default.local
+Add these two lines to `/etc/cvmfs/default.local`:
 
 ```
 CVMFS_CLIENT_PROFILE=single
 CVMFS_QUOTA_LIMIT=40000
 ```
 
-Add the url to our new Stratum 1 to the CMVFS_SERVER_URL variable in /etc/cvmfs/config.d/pilot.eessi-hpc.org.local:
+Add the url to our new Stratum 1 to the CMVFS_SERVER_URL variable in `/etc/cvmfs/config.d/pilot.eessi-hpc.org.local`:
 
 ```
 CVMFS_SERVER_URL="http://cvmfs-s1-rug.eessi-hpc.org/cvmfs/@fqrn@;http://cvmfs-s1-bgo.nessi-prod.uiocloud.no/cvmfs/@fqrn@"
