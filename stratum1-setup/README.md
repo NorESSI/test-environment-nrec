@@ -33,13 +33,13 @@ so that the VMs are easily identified by their hostname under the subzone nessi-
 
 First you need to clone this repo:
 
-```console
+```bash
 git clone https://github.com/NorESSI/test-environment-nrec.git
 ```
 
 Fill in username and password in `keystone_rc.sh` and then source it:
 
-```console
+```bash
 source keystone_rc.sh
 ```
 
@@ -47,19 +47,19 @@ Put ssh public keys of project members into the file called `authorized_keys`. O
 
 Create a zone (easier to do with openstack command..):
 
-```console
+```bash
 openstack zone create --email parosen@uio.no nessi-prod.uiocloud.no.
 ```
 
 Create silly keypair (to be used only for adding the `authorized_keys` in `/home/centos/.ssh/authorized_keys` on the host):
 
-```console
+```bash
 ssh-keygen -b 2048 -t rsa -f ~/.ssh/terraform-keys -q -N ""
 ```
 
 Create ansible host in uib-nessi-prod:
 
-```console
+```bash
 cd eessi-ansible
 terraform 0.13upgrade && terraform init
 terraform plan
@@ -68,13 +68,13 @@ terraform apply
 
 Delete the terraform-key from the project:
 
-```console
+```bash
 openstack keypair delete terraform-key
 ```
 
 Create Stratum 1 host in uib-nessi-prod:
 
-```console
+```bash
 cd ../cvmfs-s1-bgo
 terraform 0.13upgrade && terraform init
 terraform plan
@@ -83,7 +83,7 @@ terraform apply
 
 Delete terraform-key again:
 
-```console
+```bash
 openstack keypair delete terraform-key
 ```
 
@@ -92,24 +92,29 @@ created. They can be logged in using the corresponding private ssh keys.
 
 ## Instructions for the cvmfs-s1-bgo VM
 
-Mount volume:
+Mount volume and then edit `/etc/fstab` so the mount is persistent across reboots:
 
-```console
+```bash
 sudo mkfs.ext4 /dev/sdb
 sudo mount /dev/sdb /srv
+```
+
+Add this to `/etc/fstab`:
+```bash
+/dev/sdb /srv ext4 defaults 0 0
 ```
 
 ## Instructions for the eessi-ansible VM
 
 Clone filesystem-layer repo from the EESSI github page:
 
-```console
+```bash
 git clone https://github.com/EESSI/filesystem-layer.git && cd filesystem-layer
 ```
 
 Change name of example files:
 
-```console
+```bash
 mv inventory/local_site_specific_vars.yml.example inventory/local_site_specific_vars.yml
 mv inventory/hosts.example inventory/hosts
 ```
@@ -128,25 +133,25 @@ Add IP address of the Stratum 1 VM (cvmfs-s1-bgo in this case) in the inventory/
 ```
 
 Install Ansible
-```console
+```bash
 sudo yum install -y ansible
 ```
 
 Then install Ansible roles for EESSI:
 
-```console
+```bash
 ansible-galaxy role install -r requirements.yml -p ./roles --force
 ```
 
 Create ssh keys for accessing the Stratum 1 server:
 
-```console
+```bash
 ssh-keygen -b 2048 -t rsa -f ~/.ssh/ansible-host-keys -q -N ""
 ```
 
 Make sure the `ansible-host-keys.pub` is in the `$HOME/.ssh/authorized_keys` file on your Stratum 1 server.
 
-```console
+```bash
 ansible-playbook -b --private-key ~/.ssh/ansible-host-keys -e @inventory/local_site_specific_vars.yml stratum1.yml
 ```
 
@@ -156,14 +161,14 @@ About 70 min later you will have you Stratum 1 server up and running.
 
 Download and install the CVMFS client rpm:
 
-```console
+```bash
 yum install https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest.noarch.rpm
 yum install -y cvmfs
 ```
 
 Download and install the EESSI-specific configuration package: 
 
-```console
+```bash
 wget https://github.com/EESSI/filesystem-layer/releases/download/v0.3.1/cvmfs-config-eessi-0.3.1-1.noarch.rpm
 sudo rpm -ivh cvmfs-config-eessi-0.3.1-1.noarch.rpm
 ```
@@ -183,7 +188,7 @@ CVMFS_SERVER_URL="http://cvmfs-s1-rug.eessi-hpc.org/cvmfs/@fqrn@;http://cvmfs-s1
 
 Reload the config and run the cvmfs_talk command:
 
-```console
+```bash
 sudo cvmfs_config reload pilot.eessi-hpc.org
 sudo cvmfs_talk -i pilot.eessi-hpc.org host info
 ```
@@ -199,7 +204,7 @@ Active host 0: http://cvmfs-s1-bgo.eessi-hpc.org/cvmfs/pilot.eessi-hpc.org
 Since our new Stratum 1 server is closest to us (hopefully!) we can now test it by sourcing the init
 file and loading a module:
 
-```console
+```bash
 source /cvmfs/pilot.eessi-hpc.org/latest/init/bash
 [EESSI pilot 2021.03] $ module avail
 [EESSI pilot 2021.03] $ module load Python/3.8.2-GCCcore-9.3.0
