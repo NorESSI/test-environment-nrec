@@ -3,7 +3,7 @@
 The Stratum0 server 'cvmfs-local-s0-bgo.nessi-prod.uiocloud.no' was set up in NREC using
 `Terraform`. The `basic.tf` file is a modified version of the file I used for the Stratum1
 setup. The image used is `GOLD Rocky Linux 8` and the flavor is `m1.large`. A 100G drive
-is attached.
+is attached and mounted at `/srv` (this is were all software will be published).
 
 The installation of `CVMFS` on this VM was done using this
 [guide](https://cvmfs-contrib.github.io/cvmfs-tutorial-2021/02_stratum0_client/).
@@ -97,4 +97,44 @@ NB! If something goes wrong, you can try killing all cvmfs processes and rerun t
 ```bash
 sudo cvmfs_config killall && sudo cvmfs_config setup
 ```
+
+#### Adding files to the Stratum 0
+
+First you start a transaction, then you add files to `/cvmfs/repo.nessi.uiocloud.no` and finally you
+publish and the files will end up compressed and deduplicated in `/srv/cvmfs/repo.nessi.uiocloud.no`.
+Clients then end up seeing the published data in their `/cvmfs/repo.nessi.uiocloud.no` folder.
+
+Due to the way CernVM-FS works `/cvmfs/repo.nessi.uiocloud.no` on the Statum 0 is not a real file
+system and doesn't take up any space. It is actually a read-only view of what is in the repo (except
+when you open up a transaction and you will be able to write to it). 
+
+Extract from chat with `Bob Dröge`:
+
+> When you start a transaction, it adds a writable overlay on top of /cvmfs to keep track of your
+> changes. The writable overlay is stored in /var/spool, I believe. Then when you do the publish, it
+> takes the files from /var/spool, and move them into the data folder in /srv So you do have to be a
+> bit careful if you want to add a lot of stuff in one go, then you may run out of space on
+> /var/spool.
+
+Basically you follow this procedure:
+
+1. 
+```bash
+cvmfs_server transaction repo.nessi.uiocloud.no
+```
+
+2. 
+
+```bash
+cp my_new_scientific_software /cvmfs/repo.nessi.uiocloud.no
+```
+
+3.
+
+```bash
+cvmfs_server publish repo.nessi.uiocloud.no
+```
+
+
+
 
