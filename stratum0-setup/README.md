@@ -92,7 +92,7 @@ ls /cvmfs/repo.nessi.uiocloud.no
 ```
 
 
-NB! If something goes wrong, you can try killing any cvmfs process and rerun the setup:
+NB! If something goes wrong, you can try killing all cvmfs processes and rerun the setup:
 
 ```bash
 sudo cvmfs_config killall && sudo cvmfs_config setup
